@@ -1,0 +1,14 @@
+{
+  "name": "app-developer-portfolio",
+  "version": "1.0.0",
+  "description": "See every iOS app an App Store developer ships in one report: ratings, PeekPanda monthly download and revenue estimate ranges with month-over-month change, paid-ad counts and a 90-day portfolio trend. Markdown/CSV/JSON, optional Slack or Discord post.",
+  "type": "module",
+  "bin": { "app-developer-portfolio": "cli.js" },
+  "scripts": { "test": "node --test test/" },
+  "engines": { "node": ">=18" },
+  "license": "MIT",
+  "author": "Fekri Darkaoui",
+  "repository": { "type": "git", "url": "https://github.com/fdarkaou/app-developer-portfolio.git" },
+  "homepage": "https://fdarkaou.github.io/app-developer-portfolio/",
+  "keywords": ["app-store", "ios", "app-developer", "competitor-analysis", "app-revenue", "downloads", "peekpanda"]
+}

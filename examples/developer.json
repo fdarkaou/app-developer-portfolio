@@ -1,0 +1,56 @@
+{
+  "platform": "ios",
+  "developerId": "1000000000",
+  "name": "Example Labs",
+  "appCount": 4,
+  "appsTruncated": false,
+  "categories": [
+    { "category": "health_and_fitness", "appCount": 3 },
+    { "category": "food_and_drink", "appCount": 1 }
+  ],
+  "totals": {
+    "monthlyInstalls": { "range": { "low": 80000, "mid": 166000, "high": 345000 }, "rangedApps": 2, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 1 },
+    "monthlyRevenue": { "range": { "low": 149000, "mid": 311000, "high": 645000 }, "rangedApps": 2, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 2 },
+    "liveAds": 21,
+    "appsWithPaidAds": 2
+  },
+  "topInstallsStoreId": "1000000011",
+  "topRevenueStoreId": "1000000011",
+  "estimatesAsOf": "2026-10-25T00:00:00.000Z",
+  "currency": "USD",
+  "history": [
+    { "day": "2026-10-21",
+      "monthlyInstalls": { "range": { "low": 60000, "mid": 120000, "high": 250000 }, "rangedApps": 1, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 2 },
+      "monthlyRevenue": { "range": { "low": 130000, "mid": 270000, "high": 560000 }, "rangedApps": 1, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 3 } },
+    { "day": "2026-10-22",
+      "monthlyInstalls": { "range": { "low": 61000, "mid": 125000, "high": 258000 }, "rangedApps": 1, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 2 },
+      "monthlyRevenue": { "range": { "low": 134000, "mid": 278000, "high": 575000 }, "rangedApps": 1, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 3 } },
+    { "day": "2026-10-23",
+      "monthlyInstalls": { "range": { "low": 78000, "mid": 160000, "high": 333000 }, "rangedApps": 2, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 1 },
+      "monthlyRevenue": { "range": { "low": 145000, "mid": 302000, "high": 626000 }, "rangedApps": 2, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 2 } },
+    { "day": "2026-10-24",
+      "monthlyInstalls": { "range": { "low": 79000, "mid": 163000, "high": 339000 }, "rangedApps": 2, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 1 },
+      "monthlyRevenue": { "range": { "low": 147000, "mid": 306000, "high": 636000 }, "rangedApps": 2, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 2 } },
+    { "day": "2026-10-25",
+      "monthlyInstalls": { "range": { "low": 80000, "mid": 166000, "high": 345000 }, "rangedApps": 2, "belowFloorApps": 1, "belowFloorCeiling": 5000, "unknownApps": 1 },
+      "monthlyRevenue": { "range": { "low": 149000, "mid": 311000, "high": 645000 }, "rangedApps": 2, "belowFloorApps": 0, "belowFloorCeiling": null, "unknownApps": 2 } }
+  ],
+  "apps": [
+    { "storeId": "1000000011", "name": "Example Calorie Tracker", "iconUrl": null, "category": "health_and_fitness", "genre": "Health & Fitness", "price": 0, "formattedPrice": "Free", "inAppPurchases": true, "storeStatus": "listed", "rating": 4.7, "totalRatings": 12450, "releaseDate": "2024-05-01", "storeUpdatedAt": "2026-10-02",
+      "monthlyInstalls": { "kind": "range", "scope": "worldwide", "range": { "low": 62000, "mid": 130000, "high": 270000 }, "observedAt": "2026-10-25T00:00:00.000Z",
+        "previous": { "kind": "range", "scope": "worldwide", "range": { "low": 51000, "mid": 110000, "high": 220000 }, "observedAt": "2026-09-25T00:00:00.000Z" } },
+      "monthlyRevenue": { "kind": "range", "scope": "worldwide", "range": { "low": 140000, "mid": 290000, "high": 600000 }, "observedAt": "2026-10-25T00:00:00.000Z", "previous": null },
+      "paidAds": { "liveAds": 18, "totalAds": 64, "builtAt": "2026-10-25T03:00:00.000Z" } },
+    { "storeId": "1000000012", "name": "Example Meal Prep", "iconUrl": null, "category": "food_and_drink", "genre": "Food & Drink", "price": 4.99, "formattedPrice": "$4.99", "inAppPurchases": false, "storeStatus": "listed", "rating": 4.4, "totalRatings": 2310, "releaseDate": "2025-06-12", "storeUpdatedAt": "2026-09-14",
+      "monthlyInstalls": { "kind": "range", "scope": "worldwide", "range": { "low": 18000, "mid": 36000, "high": 75000 }, "observedAt": "2026-10-25T00:00:00.000Z",
+        "previous": { "kind": "range", "scope": "worldwide", "range": { "low": 20000, "mid": 40000, "high": 82000 }, "observedAt": "2026-09-25T00:00:00.000Z" } },
+      "monthlyRevenue": { "kind": "range", "scope": "worldwide", "range": { "low": 9000, "mid": 21000, "high": 45000 }, "observedAt": "2026-10-25T00:00:00.000Z",
+        "previous": { "kind": "range", "scope": "worldwide", "range": { "low": 8000, "mid": 19000, "high": 40000 }, "observedAt": "2026-09-25T00:00:00.000Z" } },
+      "paidAds": { "liveAds": 3, "totalAds": 11, "builtAt": "2026-10-25T03:00:00.000Z" } },
+    { "storeId": "1000000013", "name": "Example Water Reminder", "iconUrl": null, "category": "health_and_fitness", "genre": "Health & Fitness", "price": 0, "formattedPrice": "Free", "inAppPurchases": true, "storeStatus": "listed", "rating": 4.5, "totalRatings": 860, "releaseDate": "2025-02-11", "storeUpdatedAt": "2026-08-19",
+      "monthlyInstalls": { "kind": "below_floor", "scope": "worldwide", "ceiling": 5000, "observedAt": "2026-10-25T00:00:00.000Z", "previous": null },
+      "monthlyRevenue": null, "paidAds": null },
+    { "storeId": "1000000014", "name": "Example Step Counter Classic", "iconUrl": null, "category": "health_and_fitness", "genre": "Health & Fitness", "price": 0, "formattedPrice": "Free", "inAppPurchases": false, "storeStatus": "not_found", "rating": null, "totalRatings": null, "releaseDate": "2019-03-04", "storeUpdatedAt": "2022-01-10",
+      "monthlyInstalls": null, "monthlyRevenue": null, "paidAds": null }
+  ]
+}

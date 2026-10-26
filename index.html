@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App developer portfolio report: every iOS app a studio ships, with downloads and revenue</title>
+<meta name="description" content="Paste a PeekPanda developer response and see every iOS app one App Store developer ships: rating, monthly download and revenue estimate ranges, month-over-month change, paid-ad counts and the portfolio trend. Runs in your browser.">
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; max-width: 1080px; margin: 2rem auto; padding: 0 1rem; color: #1b1b1f; }
+  textarea { width: 100%; min-height: 160px; font: 13px ui-monospace, monospace; }
+  button, select { padding: .45rem .9rem; margin: .5rem .5rem .5rem 0; cursor: pointer; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: 14px; }
+  th, td { border-bottom: 1px solid #ddd; padding: .4rem .5rem; text-align: left; vertical-align: top; }
+  td.n { text-align: right; } tr.top td:first-child { font-weight: 600; }
+  .up { color: #1a7f37; } .down { color: #cf222e; }
+  .muted { color: #777; } .err { color: #cf222e; white-space: pre-wrap; }
+  .cards { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+  .card { border: 1px solid #ddd; border-radius: 6px; padding: .6rem .8rem; flex: 1 1 220px; }
+  .card b { display: block; font-size: 18px; }
+  pre { background: #f6f8fa; padding: .75rem; overflow-x: auto; font-size: 13px; }
+  svg text { font: 12px system-ui, sans-serif; fill: #333; }
+  footer { margin-top: 2.5rem; font-size: 13px; color: #555; }
+</style>
+</head>
+<body>
+<h1>App developer portfolio report</h1>
+<p>See every iOS app one App Store developer ships: price, rating, monthly downloads and monthly revenue with the change since last month, paid-ad counts, and the studio's 90-day trend. Paste one developer response below. Nothing leaves your browser.</p>
+<textarea id="in" spellcheck="false" placeholder='{"developerId":"...","name":"...","totals":{...},"history":[...],"apps":[...]}'></textarea>
+<div>
+  <button id="go">Build report</button>
+  <button id="ex">Load example data</button>
+  <label>Trend chart <select id="by"><option value="monthlyRevenue">monthly revenue</option><option value="monthlyInstalls">monthly downloads</option></select></label>
+  <button id="csv" disabled>Download CSV</button>
+</div>
+<div id="err" class="err"></div>
+<div id="out"></div>
+
+<h2>Where to get the JSON</h2>
+<p>The input is the developer response from <a href="https://peekpanda.com">PeekPanda</a>, an iOS competitor catalogue that keeps dated evidence and nightly download and revenue estimates for each app. Use Apple's numeric developer id, the number after <code>id</code> in an App Store developer link:</p>
+<pre>curl https://api.peekpanda.com/v1/developers/ios/1000000000 \
+  -H "Authorization: Bearer $PEEKPANDA_TOKEN" \
+  -H 'x-genviral-tenancy: personal'</pre>
+<p>Over MCP this is the <code>search_apps</code> tool with action <code>developer</code>. You need a PeekPanda account and an API key; the <a href="https://peekpanda.com/docs/get-app-developer">get an app developer reference</a> lists the fields and errors.</p>
+
+<h2>How to read it</h2>
+<ul>
+  <li>Downloads and revenue are worldwide monthly App Store estimate ranges in USD, not numbers reported by Apple or the developer.</li>
+  <li>Totals add up only the scored apps. Apps under the floor and apps with no estimate are counted apart, never added in.</li>
+  <li>The trend line is the total mid estimate per day. A dot marks a day when the number of scored apps changed: a jump there means more apps were scored, not growth.</li>
+  <li>"unknown" means no estimate or ad count is stored for that app. It is unknown, not zero.</li>
+</ul>
+
+<footer>Open source: <a href="https://github.com/fdarkaou/app-developer-portfolio">github.com/fdarkaou/app-developer-portfolio</a> (Node CLI, compare several developers, Slack or Discord post, monthly GitHub Actions example). Example data is made up.</footer>
+
+<script type="module">
+import { toRows, describe, describeTotal, pct, compact, toCsv, summaryLines } from './portfolio.js';
+const $ = (id) => document.getElementById(id);
+let last = null;
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mom = (x) => x == null ? '' : `<span class="${x > 0 ? 'up' : x < 0 ? 'down' : ''}">${pct(x)}</span>`;
+
+function trendChart(history, key) {
+  const pts = (history ?? []).filter((h) => h?.[key]?.range);
+  if (pts.length < 2) return '<p class="muted">Not enough scored days for a trend yet.</p>';
+  const money = key === 'monthlyRevenue' ? '$' : '';
+  const W = 900, H = 180, L = 60, R = 20, T = 15, B = 30;
+  const max = Math.max(...pts.map((p) => p[key].range.high)), min = 0;
+  const x = (i) => L + (i / (pts.length - 1)) * (W - L - R);
+  const y = (v) => T + (1 - (v - min) / (max - min || 1)) * (H - T - B);
+  const line = (f) => pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(f(p)).toFixed(1)}`).join('');
+  const band = line((p) => p[key].range.high) + pts.map((p, i) => `L${x(pts.length - 1 - i).toFixed(1)},${y(pts[pts.length - 1 - i][key].range.low).toFixed(1)}`).join('') + 'Z';
+  const dots = pts.map((p, i) => i && p[key].rangedApps !== pts[i - 1][key].rangedApps
+    ? `<circle cx="${x(i)}" cy="${y(p[key].range.mid)}" r="4" fill="#cf222e"><title>${esc(p.day)}: ${p[key].rangedApps} scored apps (was ${pts[i - 1][key].rangedApps})</title></circle>` : '').join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Portfolio ${key} trend">
+    <path d="${band}" fill="#5b8def22"/><path d="${line((p) => p[key].range.mid)}" fill="none" stroke="#5b8def" stroke-width="2"/>${dots}
+    <text x="${L - 6}" y="${y(max) + 4}" text-anchor="end">${money}${compact(max)}</text><text x="${L - 6}" y="${y(0)}" text-anchor="end">0</text>
+    <text x="${L}" y="${H - 8}">${esc(pts[0].day)}</text><text x="${W - R}" y="${H - 8}" text-anchor="end">${esc(pts.at(-1).day)}</text></svg>`;
+}
+
+function render() {
+  $('err').textContent = ''; $('out').innerHTML = ''; $('csv').disabled = true;
+  try { last = JSON.parse($('in').value); } catch (e) { $('err').textContent = 'That is not valid JSON: ' + e.message; return; }
+  if (!Array.isArray(last?.apps)) { $('err').textContent = 'Expected an object with an "apps" array (the GET /v1/developers/ios/{developerId} response).'; return; }
+  const t = last.totals ?? {};
+  const head = `<h2>${esc(last.name ?? 'Unnamed developer')} <span class="muted">id ${esc(last.developerId)}</span></h2>
+    <p class="muted">${esc(summaryLines(last)[0])}${last.estimatesAsOf ? ' · estimates as of ' + esc(last.estimatesAsOf.slice(0, 10)) : ''}</p>
+    <div class="cards"><div class="card">Monthly downloads<b>${t.monthlyInstalls?.range ? compact(t.monthlyInstalls.range.mid) + ' mid' : 'unknown'}</b><span class="muted">${esc(describeTotal(t.monthlyInstalls))}</span></div>
+    <div class="card">Monthly revenue<b>${t.monthlyRevenue?.range ? '$' + compact(t.monthlyRevenue.range.mid) + ' mid' : 'unknown'}</b><span class="muted">${esc(describeTotal(t.monthlyRevenue, true))}</span></div>
+    <div class="card">Live paid ads<b>${t.liveAds ?? 0}</b><span class="muted">across ${t.appsWithPaidAds ?? 0} apps with stored ad counts</span></div></div>`;
+  const rows = toRows(last).map((r) => `<tr class="${r.isTopRevenue || r.isTopInstalls ? 'top' : ''}"><td>${esc(r.name)}<div class="muted">${esc(r.genre || r.category)} · ${esc(r.price)}${r.inAppPurchases ? ' + IAP' : ''}${r.storeStatus !== 'listed' ? ' · ' + esc(r.storeStatus) : ''}</div></td>
+    <td class="n">${r.rating ?? ''}</td><td class="n">${compact(r.totalRatings)}</td>
+    <td>${esc(describe(r.installs))}</td><td class="n">${mom(r.installsChange)}</td>
+    <td>${esc(describe(r.revenue, true))}</td><td class="n">${mom(r.revenueChange)}</td>
+    <td>${r.liveAds == null ? '<span class="muted">unknown</span>' : `${r.liveAds} live / ${r.totalAds}`}</td><td>${esc(r.releaseDate)}</td></tr>`).join('');
+  $('out').innerHTML = head + trendChart(last.history, $('by').value) +
+    `<table><thead><tr><th>App</th><th>Rating</th><th>Ratings</th><th>Monthly downloads</th><th>MoM</th><th>Monthly revenue</th><th>MoM</th><th>Paid ads</th><th>Released</th></tr></thead><tbody>${rows}</tbody></table>`;
+  $('csv').disabled = false;
+}
+
+$('go').onclick = render;
+$('by').onchange = () => last && render();
+$('ex').onclick = async () => { $('in').value = await (await fetch('examples/developer.json')).text(); render(); };
+$('csv').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([toCsv(last)], { type: 'text/csv' }));
+  a.download = `developer-${last.developerId ?? 'portfolio'}.csv`; a.click();
+};
+</script>
+</body>
+</html>
